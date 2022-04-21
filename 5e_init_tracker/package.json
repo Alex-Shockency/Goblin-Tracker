@@ -3,7 +3,7 @@
   "productName": "Goblin Tracker",
   "homepage": "./",
   "main": "./src/electron/main.js",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "private": true,
   "scripts": {
     "start": "electron-forge start",
@@ -40,7 +40,8 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "ignore": "InitiativeTracker"
+        "ignore": "InitiativeTracker",
+        "icon": "./public/favicon.ico"
       },
       "makers": [
         {

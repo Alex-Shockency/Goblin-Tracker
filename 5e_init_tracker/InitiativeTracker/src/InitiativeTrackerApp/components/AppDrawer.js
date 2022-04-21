@@ -59,6 +59,8 @@ import AddMonster from "./Modals/Monster/AddMonster";
 import CreateMonster from "./Modals/Monster/CreateMonster";
 import EditMonster from "./Modals/Monster/EditMonster";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
+import DiceLog from "./Modals/DiceLog";
+import BookIcon from '@mui/icons-material/Book';
 
 function LinearProgressWithLabel(props) {
   return (
@@ -171,7 +173,8 @@ export default function PersistentDrawerLeft() {
   const theme = useTheme();
   const [appLoaded, setLoaded] = React.useState(false);
   const [open, setOpen] = React.useState(false);
-  const [roundCounter, setRoundCounter] = React.useState();
+  const [roundCounter, setRoundCounter] = React.useState(1);
+  const [diceLog, setDiceLog] = React.useState("");
 
   const [openAddCharacter, setOpenAddCharacter] = React.useState(false);
   const [openCreateCharacter, setOpenCreateCharacter] = React.useState(false);
@@ -184,12 +187,14 @@ export default function PersistentDrawerLeft() {
 
   const [characterList, setCharacterList] = React.useState([]);
   const [monsterList, setMonsterList] = React.useState([]);
+  const [initialCharacter, setInitialCharacter] = React.useState();
   const [spellList, setSpellList] = React.useState([]);
   const [initiativeList, setInitiativeList] = React.useState([]);
   const [selectedCharacter, setSelectedCharacter] = React.useState({});
   const [monsterProgress, setMonsterProgress] = React.useState(0);
   const [spellProgress, setSpellProgress] = React.useState(0);
   const [showMonsterInfo, setShowMonsterInfo] = React.useState(true);
+  const [showDiceLog, setShowDiceLog] = React.useState(false);
 
   useEffect(() => {
     let tasks = [];
@@ -251,7 +256,8 @@ export default function PersistentDrawerLeft() {
 
   const handleSetInitList = (newList) => {
     setSelectedCharacter(newList[0]);
-    setRoundCounter(0);
+    setInitialCharacter(newList[0]);
+    setRoundCounter(1);
     setInitiativeList(newList);
   };
 
@@ -423,12 +429,27 @@ export default function PersistentDrawerLeft() {
   };
 
   const handleResetRoundCounter = (event) => {
-    setRoundCounter(0);
+    setRoundCounter(1);
+  };
+
+  const handleResetDiceLog = (event) => {
+    setDiceLog("");
   };
 
   const handleRemove = (character) => {
     const newList = initiativeList.filter((item) => item.id !== character.id);
     setInitiativeList(newList);
+    if (character.name === initialCharacter.name) {
+      let maxIndex = 0;
+      let max = 0;
+      for (let i = 0; i < newList.length; i++) {
+        if (newList[i].initiative > max) {
+          maxIndex = i;
+          max = newList[i].initiative;
+        }
+      }
+      setInitialCharacter(newList[maxIndex]);
+    }
     setSelectedCharacter(newList[0]);
   };
 
@@ -438,12 +459,15 @@ export default function PersistentDrawerLeft() {
     newList.push(newList.shift());
     setInitiativeList(newList);
     setSelectedCharacter(newList[0]);
-    let tempRound = roundCounter + 1;
-    setRoundCounter(tempRound++);
+    if (newList[0].name === initialCharacter.name) {
+      let tempRound = roundCounter + 1;
+      setRoundCounter(tempRound++);
+    }
   };
 
   const handleRollInit = () => {
     let newList = [];
+    let tempDiceLog = diceLog;
     initiativeList.map((character) => {
       let mod = 0;
       let d20 = 0;
@@ -454,24 +478,31 @@ export default function PersistentDrawerLeft() {
       }
       d20 = Math.floor(Math.random() * 20) + 1;
       character.initiative = d20 + mod;
+      tempDiceLog += `${new Date().toLocaleTimeString('en-US')} ${character.name}: ${d20} + ${mod} = ${character.initiative}\n`;
 
       let tempChar = {};
       Object.assign(tempChar, character);
 
       newList.push(tempChar);
     });
-    sortInitList(newList);
+    newList = sortInitList(newList);
+    setDiceLog(tempDiceLog);
     setInitiativeList(newList);
     setSelectedCharacter(newList[0]);
-    setRoundCounter(0);
+    setInitialCharacter(newList[0]);
+    setRoundCounter(1);
   };
 
   const handleShowMonsterInfo = () => {
     setShowMonsterInfo(!showMonsterInfo);
   };
 
+  const handleShowDiceLog = () => {
+    setShowDiceLog(!showDiceLog);
+  };
+
   const sortInitList = (list) => {
-    list.sort(function (a, b) {
+    return list.sort(function (a, b) {
       return b.initiative - a.initiative;
     });
   };
@@ -573,6 +604,20 @@ export default function PersistentDrawerLeft() {
                 }
               >
                 Advance
+              </Button>
+              <Button
+                color="inherit"
+                disabled={initiativeList.length == 0}
+                onClick={() => {
+                  handleShowDiceLog();
+                }}
+                aria-label="advance"
+                size="large"
+                endIcon={
+                  <BookIcon style={{ fontSize: 40 }}></BookIcon>
+                }
+              >
+                Roll Log
               </Button>
             </div>
           </div>
@@ -795,12 +840,18 @@ export default function PersistentDrawerLeft() {
             updateCharacterList={updateCharacterList}
             characterList={characterList}
           ></EditChar>
+          <DiceLog
+            onClose={handleShowDiceLog}
+            showDiceLog={showDiceLog}
+            diceLog={diceLog}
+            handleResetDiceLog={handleResetDiceLog}
+          ></DiceLog>
         </List>
         <Divider />
         <List>
           {["Bestiary"].map((text) => (
-            <ListItem button key={text}>
-              <ListItemIcon>{<MenuBookIcon />}</ListItemIcon>
+            <ListItem disabled button key={text}>
+              <ListItemIcon>{<MenuBookIcon  />}</ListItemIcon>
               <ListItemText primary={text} />
             </ListItem>
           ))}

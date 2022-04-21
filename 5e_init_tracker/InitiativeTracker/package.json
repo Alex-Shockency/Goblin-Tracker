@@ -2,7 +2,7 @@
   "name": "goblin-tracker",
   "productName": "Goblin Tracker",
   "homepage": "./",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.7.1",

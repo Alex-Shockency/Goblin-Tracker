@@ -132,14 +132,15 @@ export default function MonsterForm(props) {
   let monsterStatTypes = ["STR", "DEX", "CON", "INT", "WIS", "CHA"];
 
   props.monsterList.forEach((element) => {
-    if (!monsterTypes.includes(element.type.toLowerCase())) monsterTypes.push(element.type.toLowerCase());
+    if (!monsterTypes.includes(element.type.toLowerCase()))
+      monsterTypes.push(element.type.toLowerCase());
     if (
       !monsterSubtypes.includes(element.subtype[0]) &&
       element.subtype[0] !== null
     )
       if (element.subtype[0] !== undefined)
         monsterSubtypes.push(element.subtype[0]);
-    if (!monsterSizes.includes(element.size) && element.size !== null)
+    if (!monsterSizes.includes(element.size) && element.size !== null && element.size !== "")
       monsterSizes.push(element.size);
     if (
       !monsterAlignments.includes(element.alignment) &&
@@ -219,7 +220,11 @@ export default function MonsterForm(props) {
   };
 
   const handleTypeChange = (e, value) => {
-    setMonType(value);
+    if (e.target.value) {
+      setMonType(e.target.value);
+    } else {
+      setMonType(value);
+    }
     props.handleFormDirty(true);
   };
 
@@ -229,12 +234,20 @@ export default function MonsterForm(props) {
   };
 
   const handleMonSizeChange = (e, value) => {
-    setMonSize(value);
+    if (e.target.value) {
+      setMonSize(e.target.value);
+    } else {
+      setMonSize(value);
+    }
     props.handleFormDirty(true);
   };
 
   const handleMonAlignmentChange = (e, value) => {
-    setMonAlignment(value);
+    if (e.target.value) {
+      setMonAlignment(e.target.value);
+    } else {
+      setMonAlignment(value);
+    }
     props.handleFormDirty(true);
   };
 
@@ -393,12 +406,12 @@ export default function MonsterForm(props) {
     e.preventDefault();
 
     let tempMonster = new Monster();
-    tempMonster.name = monName;
-    tempMonster.index = toLower(monName);
-    tempMonster.type = monType;
+    tempMonster.name = monName.toString();
+    tempMonster.index = toLower(monName.toString());
+    tempMonster.type = monType.toString();
     tempMonster.subtype = monSubType;
-    tempMonster.size = monSize;
-    tempMonster.alignment = monAlignment;
+    tempMonster.size = monSize.toString();
+    tempMonster.alignment = monAlignment.toString();
     tempMonster.challenge_rating = monCR;
     tempMonster.armor_class = monAC;
     tempMonster.hit_points = monAvgHP;

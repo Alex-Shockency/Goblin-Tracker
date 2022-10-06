@@ -3,7 +3,7 @@
   "productName": "Goblin Tracker",
   "homepage": "./",
   "main": "./src/electron/main.js",
-  "version": "0.1.8",
+  "version": "0.1.11",
   "private": true,
   "scripts": {
     "start": "electron-forge start",
@@ -74,7 +74,8 @@
   },
   "dependencies": {
     "electron-is-dev": "^2.0.0",
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "react-resizable": "^3.0.4"
   },
   "devDependencies": {
     "@electron-forge/cli": "^6.0.0-beta.63",

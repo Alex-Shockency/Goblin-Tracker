@@ -20,7 +20,7 @@ const useStyles = makeStyles((theme) => ({
   },
   cardwidth: {
     width: "inherit",
-    "max-height": "90vh",
+    "max-height": "80vh",
     "overflow-y": "auto",
   },
   root: {
@@ -95,7 +95,7 @@ export default function MonsterInfo(props) {
 
   return (
     <div>
-      <Card className={classes.cardwidth}>
+      <Card  className={classes.cardwidth}>
         {props.monster && (
           <CardHeader
             className={classes.cardheader}
